@@ -25,6 +25,7 @@ namespace Task.Api
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            
             //mappers
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 
@@ -37,6 +38,7 @@ namespace Task.Api
                 app.UseSwaggerUI();
             }
 
+            app.Urls.Add("http://localhost:5000");
             app.UseStaticFiles();
 
             //app.UseHttpsRedirection();

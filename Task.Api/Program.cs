@@ -38,7 +38,6 @@ namespace Task.Api
                 app.UseSwaggerUI();
             }
 
-            app.Urls.Add("http://localhost:5000");
             app.UseStaticFiles();
 
             //app.UseHttpsRedirection();

@@ -35,3 +35,24 @@ jobs:
         run: |
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
           docker push $DOCKER_USERNAME/taskapi
+
+  deploy:
+      needs: dockerize
+      runs-on: ubuntu-latest
+      steps:
+        - name: Deploy to AWS server
+          uses: appleboy/ssh-action@v0.1.2
+          with:
+            host: ${{ secrets.AWS_HOST }}
+            username: ${{ secrets.AWS_USER }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            port: 22
+            script: |
+              # Agar eski konteyner mavjud bo‘lsa, uni to‘xtatish va o‘chirish
+              docker rm -f taskapi || true
+  
+              # Docker Hub’dan so‘nggi tasvirni olish
+              docker pull $DOCKER_USERNAME/taskapi:latest
+  
+              # Yangi konteynerni ishga tushirish
+              docker run -d --name taskapi -p 8080:8080 --restart always $DOCKER_USERNAME/taskapi:latest

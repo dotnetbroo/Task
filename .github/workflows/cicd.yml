@@ -1,6 +1,7 @@
 name: Build and Deploy
+
 on: 
-   push:
+  push:
     branches:
       - master
 
@@ -8,13 +9,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code 
-      uses: actions/checkout@v2
-    - name: Setup .NET 8
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '8.0.x'
-    - name: Restore dependencies
-      run: dotnet restore 
-    - name: Build
-      run: dotnet build --configuration Release 
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release 
+
+  dockerize:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build Docker image 
+        run: docker build -t $DOCKER_USERNAME/taskapi -f Task.Api/Dockerfile .
+      - name: Push Docker image
+        run: |
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker push $DOCKER_USERNAME/taskapi

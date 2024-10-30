@@ -30,11 +30,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Build Docker image 
-        run: docker build -t $DOCKER_USERNAME/taskapi -f Task.Api/Dockerfile .
+        run: docker build -t $DOCKER_USERNAME/taskapi:latest -f Task.Api/Dockerfile .
       - name: Push Docker image
         run: |
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker push $DOCKER_USERNAME/taskapi
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push $DOCKER_USERNAME/taskapi:latest
 
   deploy:
     needs: dockerize

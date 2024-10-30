@@ -50,12 +50,9 @@ jobs:
           script: |
             # Agar eski konteyner mavjud bo‘lsa, uni to‘xtatish va o‘chirish
             docker rm -f taskapi || true
-            
-            # Docker tasvirlar ro'yxatini olish va kerakli tasvir mavjudligini tekshirish
-            if [[ "$(docker images -q $DOCKER_USERNAME/taskapi:latest 2> /dev/null)" == "" ]]; then
-              # Agar tasvir mavjud bo'lmasa, Docker Hub’dan tasvirni olish
-              docker pull $DOCKER_USERNAME/taskapi:latest
-            fi
+
+            # Docker Hub’dan so‘nggi tasvirni olish
+            docker pull $DOCKER_USERNAME/taskapi:latest
 
             # Yangi konteynerni ishga tushirish
             docker run -d --name taskapi -p 8080:8080 --restart always $DOCKER_USERNAME/taskapi:latest

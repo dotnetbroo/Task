@@ -17,7 +17,7 @@ COPY ["Task.Domain/Task.Domain.csproj", "Task.Domain/"]
 COPY ["Task.Service/Task.Service.csproj", "Task.Service/"]
 
 # Restore dependencies
-RUN dotnet restore "Task.Api/Task.Api.csproj"
+RUN dotnet restore "Task.Api/Task.Api.csproj" 
 
 # Copy all files and build
 COPY . .

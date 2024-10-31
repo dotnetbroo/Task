@@ -49,5 +49,4 @@ jobs:
           port: 22
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/taskapi:latest
-
             docker run -d --name taskapi -p 80:80 --restart always ${{ secrets.DOCKER_USERNAME }}/taskapi:latest

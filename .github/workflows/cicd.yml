@@ -50,11 +50,19 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            # Remove existing container if it exists
-            docker rm -f taskapi || true
-            
+            # Check if the container exists and remove it if it does
+            if [ "$(docker ps -a -q -f name=taskapi)" ]; then
+              echo "Removing existing container..."
+              docker rm -f taskapi
+            else
+              echo "No existing container to remove."
+            fi
+  
             # Pull the latest Docker image
+            echo "Pulling the latest Docker image..."
             docker pull $DOCKER_USERNAME/taskapi:latest
-            
+  
             # Run the Docker container
+            echo "Running the Docker container..."
             docker run -d --name taskapi -p 85:8080 --restart always $DOCKER_USERNAME/taskapi:latest
+

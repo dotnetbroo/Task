@@ -30,46 +30,44 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Build Docker image 
-        run: docker build -t $DOCKER_USERNAME/taskapi:latest -f Task.Api/Dockerfile .
+        run: docker build -t $DOCKER_USERNAME/taskapi -f Task.Api/Dockerfile .
       - name: Push Docker image
         run: |
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-          docker push $DOCKER_USERNAME/taskapi:latest
+          docker push $DOCKER_USERNAME/taskapi
 
   deploy:
     needs: dockerize
     runs-on: ubuntu-latest
     env:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} # Ensure this is available in the deploy job
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} # Ensure this is included here
     steps:
-    - name: Deploy to AWS server
-      uses: appleboy/ssh-action@v0.1.2
-      with:
-        host: ${{ secrets.AWS_HOST }}
-        username: ${{ secrets.AWS_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        script: |
-          # Print the Docker username to ensure it's set
-          echo "Docker Username: $DOCKER_USERNAME"
-          
-          # Check if the container exists and remove it if it does
-          if [ "$(docker ps -a -q -f name=taskapi)" ]; then
-            echo "Removing existing container..."
-            docker rm -f taskapi
-          else
-            echo "No existing container to remove."
-          fi
+      - name: Deploy to AWS server
+        uses: appleboy/ssh-action@v0.1.2
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            # Print the Docker username to ensure it's set
+            echo "Docker Username: $DOCKER_USERNAME"
+            
+            # Check if the container exists and remove it if it does
+            if [ "$(docker ps -a -q -f name=taskapi)" ]; then
+              echo "Removing existing container..."
+              docker rm -f taskapi
+            else
+              echo "No existing container to remove."
+            fi
 
-          # Pull the latest Docker image
-          echo "Pulling the latest Docker image..."
-          docker pull $DOCKER_USERNAME/taskapi:latest
+            # Pull the latest Docker image
+            echo "Pulling the latest Docker image..."
+            docker pull $DOCKER_USERNAME/taskapi:latest
 
-          # Check the image reference before running
-          IMAGE_REFERENCE="$DOCKER_USERNAME/taskapi:latest"
-          echo "Running Docker container with image: $IMAGE_REFERENCE"
+            # Check the image reference before running
+            IMAGE_REFERENCE="$DOCKER_USERNAME/taskapi:latest"
+            echo "Running Docker container with image: $IMAGE_REFERENCE"
 
-          # Run the Docker container
-          docker run -d --name taskapi -p 85:8080 --restart always "$IMAGE_REFERENCE"
-
-
+            # Run the Docker container
+            docker run -d --name taskapi -p 85:8080 --restart always "$IMAGE_REFERENCE"

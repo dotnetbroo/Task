@@ -50,6 +50,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            # Print all environment variables for debugging
+            echo "Environment Variables:"
+            env
+            
             # Print the Docker username to ensure it's set
             echo "Docker Username: $DOCKER_USERNAME"
             

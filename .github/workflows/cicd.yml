@@ -44,7 +44,7 @@ jobs:
       uses: appleboy/ssh-action@v0.1.2
       with:
         host: ${{ secrets.AWS_HOST }}
-        username: ${{ secrets.AWS_USER }}  # Ensure this is the correct username
+        username: ${{ secrets.AWS_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |

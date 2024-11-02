@@ -49,7 +49,5 @@ jobs:
           port: 22
           script: |
             docker rm -f taskapi || true
-
             docker pull $DOCKER_USERNAME/taskapi:latest
-
             docker run -d --name taskapi -p 8080:8080 --restart always $DOCKER_USERNAME/taskapi:latest

@@ -42,27 +42,34 @@ jobs:
     env:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} # Ensure this is available in the deploy job
     steps:
-      - name: Deploy to AWS server
-        uses: appleboy/ssh-action@v0.1.2
-        with:
-          host: ${{ secrets.AWS_HOST }}
-          username: ${{ secrets.AWS_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            # Check if the container exists and remove it if it does
-            if [ "$(docker ps -a -q -f name=taskapi)" ]; then
-              echo "Removing existing container..."
-              docker rm -f taskapi
-            else
-              echo "No existing container to remove."
-            fi
-  
-            # Pull the latest Docker image
-            echo "Pulling the latest Docker image..."
-            docker pull $DOCKER_USERNAME/taskapi:latest
-  
-            # Run the Docker container
-            echo "Running the Docker container..."
-            docker run -d --name taskapi -p 85:8080 --restart always $DOCKER_USERNAME/taskapi:latest
+    - name: Deploy to AWS server
+      uses: appleboy/ssh-action@v0.1.2
+      with:
+        host: ${{ secrets.AWS_HOST }}
+        username: ${{ secrets.AWS_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          # Print the Docker username to ensure it's set
+          echo "Docker Username: $DOCKER_USERNAME"
+          
+          # Check if the container exists and remove it if it does
+          if [ "$(docker ps -a -q -f name=taskapi)" ]; then
+            echo "Removing existing container..."
+            docker rm -f taskapi
+          else
+            echo "No existing container to remove."
+          fi
+
+          # Pull the latest Docker image
+          echo "Pulling the latest Docker image..."
+          docker pull $DOCKER_USERNAME/taskapi:latest
+
+          # Check the image reference before running
+          IMAGE_REFERENCE="$DOCKER_USERNAME/taskapi:latest"
+          echo "Running Docker container with image: $IMAGE_REFERENCE"
+
+          # Run the Docker container
+          docker run -d --name taskapi -p 85:8080 --restart always "$IMAGE_REFERENCE"
+
 
